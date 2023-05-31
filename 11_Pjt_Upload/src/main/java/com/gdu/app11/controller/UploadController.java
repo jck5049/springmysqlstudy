@@ -2,7 +2,6 @@ package com.gdu.app11.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,13 +16,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gdu.app11.service.UploadService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @RequestMapping("/upload")
 @Controller
 public class UploadController {
-	
+
 	// field
-	@Autowired
-	private UploadService uploadService;
+	private final UploadService uploadService;
 	
 	@GetMapping("/list.do")
 	public String list(HttpServletRequest request, Model model) {
@@ -38,15 +39,14 @@ public class UploadController {
 	
 	@PostMapping("/add.do")
 	public String add(MultipartHttpServletRequest multipartRequest, RedirectAttributes redirectAttributes) {
-		int uploadResult = uploadService.addUpload(multipartRequest);
-		redirectAttributes.addFlashAttribute("uploadResult", uploadResult);
+		int addResult = uploadService.addUpload(multipartRequest);
+		redirectAttributes.addFlashAttribute("addResult", addResult);
 		return "redirect:/upload/list.do";
 	}
 	
-	
 	@GetMapping("/detail.do")
 	public String detail(@RequestParam(value="uploadNo", required=false, defaultValue="0") int uploadNo
-					   , Model model) {
+			               , Model model) {
 		uploadService.getUploadByNo(uploadNo, model);
 		return "upload/detail";
 	}
@@ -56,25 +56,21 @@ public class UploadController {
 		return uploadService.display(attachNo);
 	}
 	
-	
 	@GetMapping("/download.do")
-	public ResponseEntity<Resource> download(@RequestParam("attachNo") int attachNo, @RequestHeader("User-Agent") String userAgent) {             
+	public ResponseEntity<Resource> download(@RequestParam("attachNo") int attachNo, @RequestHeader("User-Agent") String userAgent) {
 		return uploadService.download(attachNo, userAgent);
 	}
 	
-	
 	@GetMapping("/downloadAll.do")
-	public ResponseEntity<Resource> downloadAll(@RequestParam("uploadNo") int uploadNo) {             
+	public ResponseEntity<Resource> downloadAll(@RequestParam("uploadNo") int uploadNo) {
 		return uploadService.downloadAll(uploadNo);
 	}
-	
 	
 	@PostMapping("/removeUpload.do")
 	public String removeUpload(@RequestParam("uploadNo") int uploadNo, RedirectAttributes redirectAttributes) {
 		redirectAttributes.addFlashAttribute("removeResult", uploadService.removeUpload(uploadNo));
 		return "redirect:/upload/list.do";
 	}
-	
 	
 	@PostMapping("/editUpload.do")
 	public String editUpload(@RequestParam("uploadNo") int uploadNo, Model model) {
@@ -95,6 +91,4 @@ public class UploadController {
 		return "redirect:/upload/detail.do?uploadNo=" + uploadNo;
 	}
 	
-	
-
 }

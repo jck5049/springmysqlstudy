@@ -25,6 +25,7 @@ public class PageUtil {
 		this.totalRecord = totalRecord;
 		this.recordPerPage = recordPerPage;
 		
+		// begin 계산
 		begin = (page - 1) * recordPerPage;
 		
 		// totalPage 계산
